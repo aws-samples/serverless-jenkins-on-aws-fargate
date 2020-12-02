@@ -1,0 +1,32 @@
+.idea/
+.terraform/
+*.tfstate
+# ./*.tfstate
+# example/*.tfstate
+# !bootstrap/*.tfstate
+*.tfstate.backup
+.terraform.tfvars
+.terraform.tfstate.lock.info
+*.iml
+.history
+
+.DS_Store
+
+*.exe
+**jenkins.yaml
+*.log
+_tmp_compliance-as-code
+test/src/
+test/bin
+test/pkg
+
+cache
+test/cache
+
+*.zip
+
+vars.sh
+tf.plan
+
+# Make it possible to check-in the bootstrap state
+!/example/bootstrap/**/*.tfstate
