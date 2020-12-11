@@ -21,6 +21,7 @@ An example is included in the `example` directory.
 The following are required to deploy this Terraform module
 
 1. Terraform 13+ - Download at https://www.terraform.io/downloads.html
+1. Docker 19+ - Download at https://docs.docker.com/get-docker/
 1. A VPC with at least two public and two private subnets.
 1. An SSL certificate to associate with the Application Load Balancer. It's recommended to use and ACM certificate. This is not done by the main Terraform module. However, the example in the `example` directory uses the [public AWS ACM module](https://registry.terraform.io/modules/terraform-aws-modules/acm/aws/latest) to create the ACM certificate and pass it to the Serverless Jenkins module. You may choose to do it this way or explicitly pass the ARN of a certificate that you had previously created or imported into ACM.
 1. An admin password for Jenkins must be stored in SSM Parameter store. This parameter must be of type `SecureString` and have the name `jenkins-pwd`
