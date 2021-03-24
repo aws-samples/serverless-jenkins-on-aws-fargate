@@ -17,7 +17,7 @@ variable jenkins_dns_alias {
 The DNS alias to be associated with the deployed jenkins instance. Alias will
 be created in the given route53 zone
 EOF
-  default     = "jenkins-master"
+  default     = "jenkins-controller"
 }
 
 variable vpc_id {
@@ -31,9 +31,9 @@ variable efs_subnet_ids {
 #   default = ["subnet-5d12c221","subnet-2178df6d","subnet-29452043"]
 }
 
-variable jenkins_master_subnet_ids {
+variable jenkins_controller_subnet_ids {
   type        = list(string)
-  description = "A list of subnets for the jenkins master fargate service. Should be private"
+  description = "A list of subnets for the jenkins controller fargate service. Should be private"
 #   default = ["subnet-5d12c221","subnet-2178df6d","subnet-29452043"]
 }
 

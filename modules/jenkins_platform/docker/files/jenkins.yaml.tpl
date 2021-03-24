@@ -28,7 +28,7 @@ jenkins:
               name: "fargate-cloud-spot"
               regionName: ${cluster_region}
               retentionTimeout: 10
-              jenkinsUrl: "http://${jenkins_cloud_map_name}:${jenkins_master_port}"
+              jenkinsUrl: "http://${jenkins_cloud_map_name}:${jenkins_controller_port}"
               templates:
                   - assignPublicIp: true
                     cpu: "512"
@@ -52,7 +52,7 @@ jenkins:
               name: "fargate-cloud"
               regionName: ${cluster_region}
               retentionTimeout: 10
-              jenkinsUrl: "http://${jenkins_cloud_map_name}:${jenkins_master_port}"
+              jenkinsUrl: "http://${jenkins_cloud_map_name}:${jenkins_controller_port}"
               templates:
                   - assignPublicIp: true
                     cpu: "512"

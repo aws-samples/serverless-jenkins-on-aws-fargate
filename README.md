@@ -2,15 +2,15 @@
 Terraform module which creates a serverless Jenkins environment based on AWS Fargate. The following resources are created:
 
 * Two Amazon ECS clusters
-    * One utilizing the standard `FARGATE` capacity provider, which is to be used by the Jenkins master and high priority agents.
+    * One utilizing the standard `FARGATE` capacity provider, which is to be used by the Jenkins controller and high priority agents.
     * One utilizing the `FARGATE_SPOT` capacity provider, which is to be used by Jenkins agents which handle lower priority jobs.
-* Amazon ECS service and task for Jenkins master.
-* Jenkins master Docker container, including the [amazon-ecs-plugin](https://github.com/jenkinsci/amazon-ecs-plugin).
+* Amazon ECS service and task for Jenkins controller.
+* Jenkins controller Docker container, including the [amazon-ecs-plugin](https://github.com/jenkinsci/amazon-ecs-plugin).
 * Amazon ECR repository for storing the above container
 * Application load balancer
-* Amazon Elastic Filesystem to provide stateful storage for the Jenkins Master
+* Amazon Elastic Filesystem to provide stateful storage for the Jenkins controller
 * AWS Backup vault and schedule to backup EFS
-* AWS Cloud Map service discovery domain and entry for Jenkins master (for agent -> master discovery)
+* AWS Cloud Map service discovery domain and entry for Jenkins controller (for agent -> controller discovery)
 * IAM Roles for the above components
 * Security Groups for the above components
 
@@ -40,7 +40,7 @@ This is packaged as a Terraform module, which means it's not directly deployable
 
 | Variable  | Description | Type | Default | Required |
 | ---      |  ------  |----------|----------|----------|
-| `jenkins_ecr_repository_name` | Name for the ECR repository to be created by this module | `string` | `serverless-jenkins-master`  | `Yes`|
+| `jenkins_ecr_repository_name` | Name for the ECR repository to be created by this module | `string` | `serverless-jenkins-controller`  | `Yes`|
 | `name_prefix` | String to prepend to all created resources | `string` | `serverless-jenkins`  | `Yes`|
 | `vpc_id` | The VPC ID for the VPC where resources will be deployed | `string` | `None`  | `Yes`|
 | `efs_enable_encryption` | Should the created EFS filesystem be encrypted? | `bool` | `true`  | `Yes`|
@@ -67,17 +67,17 @@ This is packaged as a Terraform module, which means it's not directly deployable
 | `alb_ingress_allow_cidrs` | A list of cidrs to allow inbound into Jenkins on ports `80` and `443`. It is recommended to limit this to as small a set of IPs as possible. | `list(string)` | `None` | `No`|
 | `alb_subnet_ids` | A list of VPC subnet IDs where the ALB will be deployed. | `list(string)` | `None` | `Yes`|
 | `alb_acm_certificate_arn` | The ARN of an ACM certificate to use with the ALB. | `string` | `None` | `Yes`|
-| `jenkins_master_port` | The port on which the jenkins container listens on. This is used to route traffic from public ports to container ports. | `number` | `8080` | `Yes`|
-| `jenkins_jnlp_port` | The JNLP port used for communication between the Jenkins master and agent. | `number` | `50000` | `Yes`|
-| `jenkins_master_cpu` | The amount of CPU to dedicate to the fargate task. This must be one of the accepted Fargate [options](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html).| `number` | `2048` | `Yes`|
-| `jenkins_master_meory` | The amount of memory to dedicate to the fargate task. This must be one of the accepted Fargate [options](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html).| `number` | `4096` | `Yes`|
-| `jenkins_master_task_log_retention_days` | The number of days to retain CloudWatch logs for the Jenkins fargate task. | `number` | `30` | `Yes`|
-| `jenkins_master_subnet_ids` | The VPC subnet IDs where the Jenkins Fargate tasks will be deployed. It is recommended to use private subnets. | `list(string)` | `None` | `Yes`|
-| `jenkins_master_task_role_arn` | An optional role ARN to use as the Jenkins master Fargate task role. A role is created if not specified. | `string` | `None` | `No`|
+| `jenkins_controller_port` | The port on which the jenkins container listens on. This is used to route traffic from public ports to container ports. | `number` | `8080` | `Yes`|
+| `jenkins_jnlp_port` | The JNLP port used for communication between the Jenkins controller and agent. | `number` | `50000` | `Yes`|
+| `jenkins_controller_cpu` | The amount of CPU to dedicate to the fargate task. This must be one of the accepted Fargate [options](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html).| `number` | `2048` | `Yes`|
+| `jenkins_controller_meory` | The amount of memory to dedicate to the fargate task. This must be one of the accepted Fargate [options](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html).| `number` | `4096` | `Yes`|
+| `jenkins_controller_task_log_retention_days` | The number of days to retain CloudWatch logs for the Jenkins fargate task. | `number` | `30` | `Yes`|
+| `jenkins_controller_subnet_ids` | The VPC subnet IDs where the Jenkins Fargate tasks will be deployed. It is recommended to use private subnets. | `list(string)` | `None` | `Yes`|
+| `jenkins_controller_task_role_arn` | An optional role ARN to use as the Jenkins controller Fargate task role. A role is created if not specified. | `string` | `None` | `No`|
 | `ecs_execution_role_arn` | An optional role ARN to use as the ECS execution role. A role is created if not specified.| `string` | `None` | `No`|
 | `route53_create_alias` | Should a Route53 alias be created? `route53_zone_id` and `route53_alias_name` must also be specified. | `string` | `None` | `No`|
 | `route53_zone_id` | The Route53 zone ID where the DNS record should be created. | `string` | `None` | `No`|
-| `route53_alias_name` | The Route53 alias name to create. | `string` | `jenkins-master` | `No`|
+| `route53_alias_name` | The Route53 alias name to create. | `string` | `jenkins-controller` | `No`|
 | `tags` | A map of AWS resource tags to be applied to all resources. | `map(any)` | `None` | `Yes`|
 
 ## Security

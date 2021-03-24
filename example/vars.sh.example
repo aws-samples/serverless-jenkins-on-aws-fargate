@@ -13,5 +13,5 @@ export TF_VAR_route53_zone_id="Z06494431NLTSXDDSOF83"
 export TF_VAR_route53_domain_name="exampledomain.com"
 export TF_VAR_vpc_id="vpc-za7f9bd0"
 export TF_VAR_efs_subnet_ids=${PRIVATE_SUBNETS}
-export TF_VAR_jenkins_master_subnet_ids=${PRIVATE_SUBNETS}
+export TF_VAR_jenkins_controller_subnet_ids=${PRIVATE_SUBNETS}
 export TF_VAR_alb_subnet_ids=${PUBLIC_SUBNETS}
