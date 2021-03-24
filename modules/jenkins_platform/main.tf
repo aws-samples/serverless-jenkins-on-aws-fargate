@@ -18,7 +18,7 @@ resource "aws_security_group" efs_security_group {
 
   ingress {
     protocol        = "tcp"
-    security_groups = [aws_security_group.jenkins_master_security_group.id]
+    security_groups = [aws_security_group.jenkins_controller_security_group.id]
     from_port       = 2049
     to_port         = 2049
   }
@@ -34,17 +34,17 @@ resource "aws_security_group" efs_security_group {
 }
 
 
-resource "aws_security_group" jenkins_master_security_group {
-  name        = "${var.name_prefix}-master"
-  description = "${var.name_prefix} master security group"
+resource "aws_security_group" jenkins_controller_security_group {
+  name        = "${var.name_prefix}-controller"
+  description = "${var.name_prefix} controller security group"
   vpc_id      = var.vpc_id
 
   ingress {
     protocol        = "tcp"
     self = true
     security_groups = var.alb_create_security_group ? [aws_security_group.alb_security_group[0].id] : var.alb_security_group_ids
-    from_port       = var.jenkins_master_port
-    to_port         = var.jenkins_master_port
+    from_port       = var.jenkins_controller_port
+    to_port         = var.jenkins_controller_port
   }
 
   ingress {
@@ -99,7 +99,7 @@ resource "aws_security_group" alb_security_group {
 }
 
 resource "aws_lb" this {
-  name               = replace("${var.name_prefix}-master-alb", "_", "-")
+  name               = replace("${var.name_prefix}-crtl-alb", "_", "-")
   internal           = var.alb_type_internal
   load_balancer_type = "application"
   security_groups    = var.alb_create_security_group ? [aws_security_group.alb_security_group[0].id] : var.alb_security_group_ids
@@ -118,8 +118,8 @@ resource "aws_lb" this {
 }
 
 resource "aws_lb_target_group" this {
-  name        = replace("${var.name_prefix}-master", "_", "-")
-  port        = var.jenkins_master_port
+  name        = replace("${var.name_prefix}-crtl", "_", "-")
+  port        = var.jenkins_controller_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"

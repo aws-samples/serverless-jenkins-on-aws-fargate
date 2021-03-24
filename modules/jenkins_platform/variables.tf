@@ -1,8 +1,8 @@
 
 variable jenkins_ecr_repository_name {
   type        = string
-  default     = "serverless-jenkins-master"
-  description = "Name for Jenkins master ECR repository"
+  default     = "serverless-jenkins-controller"
+  description = "Name for Jenkins controller ECR repository"
 }
 
 
@@ -163,7 +163,7 @@ variable alb_acm_certificate_arn {
   description = "The ACM certificate ARN to use for the alb"
 }
 
-variable jenkins_master_port {
+variable jenkins_controller_port {
   type    = number
   default = 8080
 }
@@ -173,30 +173,30 @@ variable jenkins_jnlp_port {
   default = 50000
 }
 
-variable jenkins_master_cpu {
+variable jenkins_controller_cpu {
   type    = number
   default = 2048
 }
 
-variable jenkins_master_memory {
+variable jenkins_controller_memory {
   type    = number
   default = 4096
 }
 
-variable jenkins_master_task_log_retention_days {
+variable jenkins_controller_task_log_retention_days {
   type    = number
   default = 30
 }
 
-variable jenkins_master_subnet_ids {
+variable jenkins_controller_subnet_ids {
   type        = list(string)
-  description = "A list of subnets for the jenkins master fargate service (required)"
+  description = "A list of subnets for the jenkins controller fargate service (required)"
   default     = null
 }
 
-variable jenkins_master_task_role_arn {
+variable jenkins_controller_task_role_arn {
   type        = string
-  description = "An custom task role to use for the jenkins master (optional)"
+  description = "An custom task role to use for the jenkins controller (optional)"
   default     = null
 }
 
@@ -219,7 +219,7 @@ variable route53_zone_id {
 
 variable route53_alias_name {
   type    = string
-  default = "jenkins-master"
+  default = "jenkins-controller"
 }
 
 variable tags {

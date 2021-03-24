@@ -1,5 +1,5 @@
 // Jenkins Container Infra (Fargate)
-resource "aws_ecs_cluster" jenkins_master {
+resource "aws_ecs_cluster" jenkins_controller {
   name               = "${var.name_prefix}-main"
   capacity_providers = ["FARGATE"]
   tags               = var.tags
@@ -19,43 +19,43 @@ resource "aws_ecs_cluster" jenkins_agents {
   }
 }
 
-data "template_file" jenkins_master_container_def {
-  template = file("${path.module}/templates/jenkins-master.json.tpl")
+data "template_file" jenkins_controller_container_def {
+  template = file("${path.module}/templates/jenkins-controller.json.tpl")
 
   vars = {
-    name                = "${var.name_prefix}-master"
-    jenkins_master_port = var.jenkins_master_port
+    name                = "${var.name_prefix}-controller"
+    jenkins_controller_port = var.jenkins_controller_port
     jnlp_port           = var.jenkins_jnlp_port
     source_volume       = "${var.name_prefix}-efs"
     jenkins_home        = "/var/jenkins_home"
-    container_image     = aws_ecr_repository.jenkins_master.repository_url
+    container_image     = aws_ecr_repository.jenkins_controller.repository_url
     region              = local.region
     account_id          = local.account_id  
-    log_group           = aws_cloudwatch_log_group.jenkins_master_log_group.name
-    memory              = var.jenkins_master_memory
-    cpu                 = var.jenkins_master_cpu
+    log_group           = aws_cloudwatch_log_group.jenkins_controller_log_group.name
+    memory              = var.jenkins_controller_memory
+    cpu                 = var.jenkins_controller_cpu
   }
 }
 
-resource "aws_cloudwatch_log_group" jenkins_master_log_group {
+resource "aws_cloudwatch_log_group" jenkins_controller_log_group {
   name              = var.name_prefix
-  retention_in_days = var.jenkins_master_task_log_retention_days
+  retention_in_days = var.jenkins_controller_task_log_retention_days
 
   tags = var.tags
 }
 
 
 
-resource "aws_ecs_task_definition" jenkins_master {
+resource "aws_ecs_task_definition" jenkins_controller {
   family = var.name_prefix
 
-  task_role_arn            = var.jenkins_master_task_role_arn != null ? var.jenkins_master_task_role_arn : aws_iam_role.jenkins_master_task_role.arn
-  execution_role_arn       = var.ecs_execution_role_arn != null ? var.ecs_execution_role_arn : aws_iam_role.jenkins_master_task_role.arn
+  task_role_arn            = var.jenkins_controller_task_role_arn != null ? var.jenkins_controller_task_role_arn : aws_iam_role.jenkins_controller_task_role.arn
+  execution_role_arn       = var.ecs_execution_role_arn != null ? var.ecs_execution_role_arn : aws_iam_role.jenkins_controller_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.jenkins_master_cpu
-  memory                   = var.jenkins_master_memory
-  container_definitions    = data.template_file.jenkins_master_container_def.rendered
+  cpu                      = var.jenkins_controller_cpu
+  memory                   = var.jenkins_controller_memory
+  container_definitions    = data.template_file.jenkins_controller_container_def.rendered
 
   volume {
     name = "${var.name_prefix}-efs"
@@ -74,11 +74,11 @@ resource "aws_ecs_task_definition" jenkins_master {
   tags = var.tags
 }
 
-resource "aws_ecs_service" jenkins_master {
-  name = "${var.name_prefix}-master"
+resource "aws_ecs_service" jenkins_controller {
+  name = "${var.name_prefix}-controller"
 
-  task_definition  = aws_ecs_task_definition.jenkins_master.arn
-  cluster          = aws_ecs_cluster.jenkins_master.id
+  task_definition  = aws_ecs_task_definition.jenkins_controller.arn
+  cluster          = aws_ecs_cluster.jenkins_controller.id
   desired_count    = 1
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
@@ -89,19 +89,19 @@ resource "aws_ecs_service" jenkins_master {
   
   
   service_registries {
-    registry_arn = aws_service_discovery_service.master.arn
+    registry_arn = aws_service_discovery_service.controller.arn
     port =  var.jenkins_jnlp_port
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.this.arn
-    container_name   = "${var.name_prefix}-master"
-    container_port   = var.jenkins_master_port
+    container_name   = "${var.name_prefix}-controller"
+    container_port   = var.jenkins_controller_port
   }
 
   network_configuration {
-    subnets          = var.jenkins_master_subnet_ids
-    security_groups  = [aws_security_group.jenkins_master_security_group.id]
+    subnets          = var.jenkins_controller_subnet_ids
+    security_groups  = [aws_security_group.jenkins_controller_security_group.id]
     assign_public_ip = false
   }
 
@@ -109,17 +109,17 @@ resource "aws_ecs_service" jenkins_master {
 }
 
 
-resource "aws_service_discovery_private_dns_namespace" "master" {
+resource "aws_service_discovery_private_dns_namespace" "controller" {
   name = var.name_prefix
   vpc = var.vpc_id
   description = "Serverless Jenkins discovery managed zone."
 }
 
 
-resource "aws_service_discovery_service" "master" {
-  name = "master"
+resource "aws_service_discovery_service" "controller" {
+  name = "controller"
   dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.master.id
+    namespace_id = aws_service_discovery_private_dns_namespace.controller.id
     routing_policy = "MULTIVALUE"
     dns_records {
       ttl = 10

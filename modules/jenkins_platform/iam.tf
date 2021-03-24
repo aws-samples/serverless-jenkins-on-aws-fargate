@@ -106,13 +106,13 @@ resource "aws_iam_role_policy_attachment" ecs_execution {
   policy_arn = aws_iam_policy.ecs_execution_policy.arn
 }
 
-data "aws_iam_policy_document" jenkins_master_task_policy {
+data "aws_iam_policy_document" jenkins_controller_task_policy {
   statement {
     effect = "Allow"
     actions = [
       "ecs:ListContainerInstances"
     ]
-    resources = [aws_ecs_cluster.jenkins_master.arn, aws_ecs_cluster.jenkins_agents.arn]
+    resources = [aws_ecs_cluster.jenkins_controller.arn, aws_ecs_cluster.jenkins_agents.arn]
   }
   statement {
     effect = "Allow"
@@ -123,7 +123,7 @@ data "aws_iam_policy_document" jenkins_master_task_policy {
       test     = "ArnEquals"
       variable = "ecs:cluster"
       values = [
-          aws_ecs_cluster.jenkins_master.arn,
+          aws_ecs_cluster.jenkins_controller.arn,
           aws_ecs_cluster.jenkins_agents.arn
       ]
     }
@@ -139,7 +139,7 @@ data "aws_iam_policy_document" jenkins_master_task_policy {
       test     = "ArnEquals"
       variable = "ecs:cluster"
       values = [
-          aws_ecs_cluster.jenkins_master.arn,
+          aws_ecs_cluster.jenkins_controller.arn,
           aws_ecs_cluster.jenkins_agents.arn
       ]
     }
@@ -174,7 +174,7 @@ data "aws_iam_policy_document" jenkins_master_task_policy {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = ["${aws_cloudwatch_log_group.jenkins_master_log_group.arn}:*"]
+    resources = ["${aws_cloudwatch_log_group.jenkins_controller_log_group.arn}:*"]
   }
   statement {
     effect = "Allow"
@@ -205,18 +205,18 @@ data "aws_iam_policy_document" jenkins_master_task_policy {
   }
 }
 
-resource "aws_iam_policy" jenkins_master_task_policy {
-  name   = "${var.name_prefix}-master-task-policy"
-  policy = data.aws_iam_policy_document.jenkins_master_task_policy.json
+resource "aws_iam_policy" jenkins_controller_task_policy {
+  name   = "${var.name_prefix}-controller-task-policy"
+  policy = data.aws_iam_policy_document.jenkins_controller_task_policy.json
 }
 
-resource "aws_iam_role" jenkins_master_task_role {
-  name               = "${var.name_prefix}-master-task-role"
+resource "aws_iam_role" jenkins_controller_task_role {
+  name               = "${var.name_prefix}-controller-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_policy.json
   tags               = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" jenkins_master_task {
-  role       = aws_iam_role.jenkins_master_task_role.name
-  policy_arn = aws_iam_policy.jenkins_master_task_policy.arn
+resource "aws_iam_role_policy_attachment" jenkins_controller_task {
+  role       = aws_iam_role.jenkins_controller_task_role.name
+  policy_arn = aws_iam_policy.jenkins_controller_task_policy.arn
 }
