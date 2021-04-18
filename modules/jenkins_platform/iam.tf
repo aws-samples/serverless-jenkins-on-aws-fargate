@@ -25,9 +25,43 @@ data "aws_iam_policy_document" efs_resource_policy {
   }
 }
 
+
 resource "aws_efs_file_system_policy" this {
   file_system_id = aws_efs_file_system.this.id
   policy         = data.aws_iam_policy_document.efs_resource_policy.json
+}
+
+// ECR
+data "aws_iam_policy_document" ecr_resource_policy {
+  statement {
+    effect = "Allow"
+    actions = [
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:PutImage",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload",
+                "ecr:DescribeRepositories",
+                "ecr:GetRepositoryPolicy",
+                "ecr:ListImages",
+                "ecr:DeleteRepository",
+                "ecr:BatchDeleteImage",
+                "ecr:SetRepositoryPolicy",
+                "ecr:DeleteRepositoryPolicy"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${local.account_id}:root"]
+    }
+  }
+
+}
+
+resource "aws_ecr_repository_policy" "this" {
+  repository = aws_ecr_repository.jenkins_controller.name
+  policy     = data.aws_iam_policy_document.ecr_resource_policy.json
 }
 
 
@@ -219,4 +253,38 @@ resource "aws_iam_role" jenkins_controller_task_role {
 resource "aws_iam_role_policy_attachment" jenkins_controller_task {
   role       = aws_iam_role.jenkins_controller_task_role.name
   policy_arn = aws_iam_policy.jenkins_controller_task_policy.arn
+}
+
+
+//CloudWatch
+data "aws_iam_policy_document" "cloudwatch" {
+  policy_id = "key-policy-cloudwatch"
+  statement {
+    sid = "Enable IAM User Permissions"
+    actions = [
+      "kms:*",
+    ]
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = ["arn:aws:iam::${local.account_id}:root"]
+    }
+    resources = ["*"]
+  }
+  statement {
+    sid = "AllowCloudWatchLogs"
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*"
+    ]
+    effect = "Allow"
+    principals {
+      type = "Service"
+      identifiers = ["logs.${local.region}.amazonaws.com"]
+    }
+    resources = ["*"]
+  }
 }
