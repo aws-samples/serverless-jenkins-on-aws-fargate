@@ -41,18 +41,20 @@ resource "aws_security_group" jenkins_controller_security_group {
 
   ingress {
     protocol        = "tcp"
-    self = true
+    self            = true
     security_groups = var.alb_create_security_group ? [aws_security_group.alb_security_group[0].id] : var.alb_security_group_ids
     from_port       = var.jenkins_controller_port
     to_port         = var.jenkins_controller_port
+    description     = "Communication channel to jenkins leader"
   }
 
   ingress {
-    protocol    = "tcp"
-    self = true
+    protocol        = "tcp"
+    self            = true
     security_groups = var.alb_create_security_group ? [aws_security_group.alb_security_group[0].id] : var.alb_security_group_ids
-    from_port   = var.jenkins_jnlp_port
-    to_port     = var.jenkins_jnlp_port
+    from_port       = var.jenkins_jnlp_port
+    to_port         = var.jenkins_jnlp_port
+    description     = "Communication channel to jenkins leader"
   }
 
   egress {
@@ -79,6 +81,7 @@ resource "aws_security_group" alb_security_group {
     from_port   = 80
     to_port     = 80
     cidr_blocks = var.alb_ingress_allow_cidrs
+    description = "HTTP Public access"
   }
 
   ingress {
@@ -86,6 +89,7 @@ resource "aws_security_group" alb_security_group {
     from_port   = 443
     to_port     = 443
     cidr_blocks = var.alb_ingress_allow_cidrs
+    description = "HTTPS Public access"
   }
 
   egress {
