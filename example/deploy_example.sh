@@ -7,7 +7,6 @@ source vars.sh
 rm -rf .terraform
 
 terraform init \
-    -lock=false \
     -backend=true \
     -backend-config key="${TF_STATE_OBJECT_KEY}" \
     -backend-config bucket="${TF_STATE_BUCKET}" \

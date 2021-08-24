@@ -20,10 +20,10 @@ An example is included in the `example` directory.
 ## Prerequisites
 The following are required to deploy this Terraform module
 
-1. Terraform 13+ - Download at https://www.terraform.io/downloads.html
+1. Terraform 0.14+  - Download at https://www.terraform.io/downloads.html
 1. Docker 19+ - Download at https://docs.docker.com/get-docker/
 1. A VPC with at least two public and two private subnets. Private subnets will require to have NAT gateway to be able to access resources such as secret manager, as well as update for Jenkins. 
-1. An SSL certificate to associate with the Application Load Balancer. It's recommended to use and ACM certificate. This is not done by the main Terraform module. However, the example in the `example` directory uses the [public AWS ACM module](https://registry.terraform.io/modules/terraform-aws-modules/acm/aws/latest) to create the ACM certificate and pass it to the Serverless Jenkins module. You may choose to do it this way or explicitly pass the ARN of a certificate that you had previously created or imported into ACM.
+1. An SSL certificate to associate with the Application Load Balancer. It's recommended to use an ACM certificate. This is not done by the main Terraform module. However, the example in the `example` directory uses the [public AWS ACM module](https://registry.terraform.io/modules/terraform-aws-modules/acm/aws/latest) to create the ACM certificate and pass it to the Serverless Jenkins module. You may choose to do it this way or explicitly pass the ARN of a certificate that you had previously created or imported into ACM.
 1. An admin password for Jenkins must be stored in SSM Parameter store. This parameter must be of type `SecureString` and have the name `jenkins-pwd`
 1. Terraform must be bootstrapped. This means that a state S3 bucket and a state locking DynamoDB table must be initialized.
 
@@ -55,7 +55,7 @@ This is packaged as a Terraform module, which means it's not directly deployable
 | `efs_enable_backup` | Should backups of EFS be enabled using AWS Backup? | `bool` | `true` | `Yes`|
 | `efs_backup_schedule` | An AWS Cron string defining the backup schedule for the EFS Fileystem. | `string` | `cron(0 00 * * ? *)` | `Yes`|
 | `efs_backup_start_window` | The amount of grace time in minutes given to the backup job in order to start. If the job does not within this period it will be canceled. | `number` | `60` | `Yes`|
-| `efs_backup_completion_window` | The amount of time in minutes that the backup has to complete. If the backup job is not completed withing this period it will be canceled. | `number` | `120` | `Yes`|
+| `efs_backup_completion_window` | The amount of time in minutes that the backup has to complete. If the backup job is not completed within this period it will be canceled. | `number` | `120` | `Yes`|
 | `efs_backup_cold_storage_after_days` | The number of days before old backups are moved to cold storage. | `number` | `30` | `No`|
 | `efs_backup_delete_after_days` | The number of days before old backups are Deleted. If cold storage transition is enabled then this number must be greater than `90`. | `number` | `120` | `No`|
 | `alb_type_internal` | Should the ALB be of type `internal`. If internal, access to the Jenkins UI will be restricted such that it is accessible only from the VPC. | `bool` | `false` | `Yes`|
