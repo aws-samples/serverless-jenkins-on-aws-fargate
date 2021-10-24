@@ -27,6 +27,7 @@ data "template_file" jenkins_configuration_def {
     jenkins_controller_port       = var.jenkins_controller_port
     jnlp_port                 = var.jenkins_jnlp_port
     agent_security_groups     = aws_security_group.jenkins_controller_security_group.id
+    execution_role_arn        = aws_iam_role.ecs_execution_role.arn
     subnets                   = join(",", var.jenkins_controller_subnet_ids)
   }
 }
