@@ -33,7 +33,7 @@ jenkins:
                   - cpu: "512"
                     image: "jenkins/inbound-agent"
                     label: "build-example-spot"
-                    execution_role_arn: ${execution_role_arn}
+                    executionRole: ${execution_role_arn}
                     launchType: "FARGATE"
                     memory: 0
                     memoryReservation: 1024
@@ -57,7 +57,7 @@ jenkins:
                   - cpu: "512"
                     image: "jenkins/inbound-agent"
                     label: "build-example"
-                    execution_role_arn: ${execution_role_arn}
+                    executionRole: ${execution_role_arn}
                     launchType: "FARGATE"
                     memory: 0
                     memoryReservation: 1024
