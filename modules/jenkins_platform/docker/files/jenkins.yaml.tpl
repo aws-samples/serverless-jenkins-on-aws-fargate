@@ -22,6 +22,7 @@ jenkins:
     slaveAgentPort: 50000
     clouds:
         - ecs:
+              numExecutors: 1
               allowedOverrides: "inheritFrom,label,memory,cpu,image"
               credentialsId: ""
               cluster: ${ecs_cluster_fargate_spot}
@@ -46,6 +47,7 @@ jenkins:
                     templateName: "build-example"
                     uniqueRemoteFSRoot: false
         - ecs:
+              numExecutors: 1
               allowedOverrides: "inheritFrom,label,memory,cpu,image"
               credentialsId: ""
               cluster: ${ecs_cluster_fargate}

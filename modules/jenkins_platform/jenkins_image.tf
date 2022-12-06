@@ -18,6 +18,7 @@ resource "aws_ecr_repository" "jenkins_controller" {
 data "template_file" jenkins_configuration_def {
 
   template = file("${path.module}/docker/files/jenkins.yaml.tpl")
+  
 
   vars = {
     ecs_cluster_fargate       = aws_ecs_cluster.jenkins_controller.arn
@@ -32,10 +33,10 @@ data "template_file" jenkins_configuration_def {
   }
 }
 
-
 resource "null_resource" "render_template" {
   triggers = {
     src_hash = file("${path.module}/docker/files/jenkins.yaml.tpl")
+    always_run = timestamp()
   }
   depends_on = [data.template_file.jenkins_configuration_def]
 
@@ -49,7 +50,8 @@ EOF
 
 resource "null_resource" "build_docker_image" {
   triggers = {
-     src_hash = file("${path.module}/docker/files/jenkins.yaml.tpl")
+    src_hash = file("${path.module}/docker/files/jenkins.yaml.tpl")
+    always_run = timestamp()
   }
   depends_on = [null_resource.render_template]
   provisioner "local-exec" {
