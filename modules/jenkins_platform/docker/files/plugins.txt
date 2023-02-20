@@ -24,7 +24,7 @@ git:4.14.2
 github-api:1.303-400.v35c2d8258028
 github:1.36.0
 handlebars:3.0.8
-jackson2-api:2.13.4.20221013-295.v8e29ea_354141
+jackson2-api:2.14.2-319.v37853346a_229
 jdk-tool:63.v62d2fd4b_4793
 job-dsl:1.77
 jquery-detached:1.2.1
@@ -51,7 +51,7 @@ pipeline-stage-view:2.28
 plain-credentials:139.ved2b_9cf7587b
 resource-disposer:0.19
 scm-api:621.vda_a_b_055e58f7
-script-security:1218.v39ca_7f7ed0a_c
+script-security:1228.vd93135a_2fb_25
 snakeyaml-api:1.33-90.v80dcb_3814d35 
 ssh-credentials:305.v8f4381501156
 structs:324.va_f5d6774f3a_d
