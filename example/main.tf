@@ -32,6 +32,21 @@ resource "aws_kms_key" "efs_kms_key" {
   description = "KMS key used to encrypt Jenkins EFS volume"
 }
 
+resource "random_password" "password" {
+  length = 16
+  special = false
+}
+
+resource "aws_ssm_parameter" "admin-password" {
+  name = "jenkins-pwd"
+  description = "Jenkins admin password"
+  type = "SecureString"
+  value = random_password.password.result
+  tags = merge(local.tags, {
+    Name = "${local.name_prefix}-admin-password"
+  })
+}
+
 module "serverless_jenkins" {
   source                          = "../modules/jenkins_platform"
   name_prefix                     = local.name_prefix
