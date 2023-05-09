@@ -6,8 +6,9 @@ deploy_example.sh script and therefore do not need to be updated.
 terraform {
   required_version = ">= 0.13"
   backend "s3" {
-    bucket = "willbeoverwritten"
-    key    = "willbeoverwritten"
+    bucket = "disciple-terraform-state-staging"
+    key    = "eu-west-1"
+    region = "eu-west-1"
     encrypt = true
   }
 }
