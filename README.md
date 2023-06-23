@@ -1,7 +1,7 @@
 # AWS Serverless Jenkins Terraform Module
 Terraform module which creates a serverless Jenkins environment based on AWS Fargate. The following resources are created:
 
-* Two Amazon ECS clusters
+* Two Amazon ECS clusterss
     * One utilizing the standard `FARGATE` capacity provider, which is to be used by the Jenkins controller and high priority agents.
     * One utilizing the `FARGATE_SPOT` capacity provider, which is to be used by Jenkins agents which handle lower priority jobs.
 * Amazon ECS service and task for Jenkins controller.
